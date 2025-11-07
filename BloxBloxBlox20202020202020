@@ -1528,7 +1528,7 @@ local tpsea1 = t3:AddDropdown({
     Options = {"Pirate Starter", "Marine Starter", "Jungle", "Pirate Village", "Desert", "Snow Village", "Middle Town", "Marine Fortress", "Prison", "Magma Village", "Underwater City", "Skylands", "Skylands - 2", "Colosseum", "Fountain City"},
     Default = "nil",
     Flag = "dropdown teste",
-    Callback = function(D)
+    Callback = function(string)
         PlacetoTravel = string
     end
 })
@@ -1639,7 +1639,7 @@ local fightingstyle = t4:AddSection({"Fighting Style"})
 local t5 = w1:MakeTab({"Character", "user"})
 local s5 = t5:AddSection({"Character"})
 
-t4:AddSlider({
+t5:AddSlider({
     Name = "Dash length",
     Min = 1,
     Max = 1000,
@@ -1650,7 +1650,7 @@ t4:AddSlider({
     end
 })
 
-t4:AddSlider({
+t5:AddSlider({
     Name = "Speed Multiple",
     Min = 1,
     Max = 11,
@@ -1661,11 +1661,11 @@ t4:AddSlider({
     end
 })
 
-t4:AddButton({"Apply Dash buff", function(Value)
+t5:AddButton({"Apply Dash buff", function(Value)
 char:SetAttribute("DashLength", DashLength)
 end})
 
-t4:AddButton({"Apply Speed buff", function(Value)
+t5:AddButton({"Apply Speed buff", function(Value)
 char:SetAttribute("SpeedMultiplier", SpeedMult)
 end})
 
