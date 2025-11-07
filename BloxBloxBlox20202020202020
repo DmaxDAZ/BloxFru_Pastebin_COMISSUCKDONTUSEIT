@@ -5,6 +5,7 @@ local SpeedMult = 1
 local PlacetoTravel = "None"
 local CfPla = CFrame.new(0,0,0)
 local AbilityToLearn = "None"
+local FightingSty = "Combat"
 
 _G.StopTween = false
 _G.Bringmobs = true
@@ -1596,7 +1597,7 @@ autotravel:Callback(function(bool)
         _G.StopTween = false
         Tween1(CfPla)
         elseif PlacetoTravel == "Skylands - 2" then
-        Remotes:FindFirstChild("CommF_"):InvokeServer("requestEntrance", Vector3.new(61163.852, 11.68, 1819.784))
+        Remotes:FindFirstChild("CommF_"):InvokeServer("requestEntrance", Vector3.new(-7894.618, 5547.142, -380.291))
         wait()
         _G.StopTween = false
         Tween1(CfPla)
@@ -1613,9 +1614,9 @@ local t4 = w1:MakeTab({"Shop", "store"})
 local s4 = t4:AddSection({"Shop"})
 
 local skills = t4:AddDropdown({
-    Name = "Learn ability",
-    Description = "Prints the drop-down",
-    Options = {"Air Jump (10,000$)", "Aura (25,00$)", "Flash Step (100,000$)", "Observation (750,000$)"},
+    Name = "Select ability",
+    Description = "Select ability to learn",
+    Options = {"Air Jump (10,000$)", "Aura (25,00$)", "Flash Step (100,000$)"},
     Default = "nil",
     Flag = "ability",
     Callback = function(string)
@@ -1623,18 +1624,34 @@ local skills = t4:AddDropdown({
     end
 })
 
-task.spawn(function()
-    while wait() do
-        pcall(function()
+t4:AddButton({"Learn ability", function(Value)
          if AbilityToLearn == "Air Jump (10,000$)" then
-            
-            end
-        end)
-    end
-end)
-
+            Remotes:FindFirstChild("CommF_"):InvokeServer("BuyHaki", "Geppo")
+        elseif AbilityToLearn == "Aura (25,00$)" then
+            Remotes:FindFirstChild("CommF_"):InvokeServer("BuyHaki", "Buso")
+        elseif AbilityToLearn == "Flash Step (25,00$)" then
+            Remotes:FindFirstChild("CommF_"):InvokeServer("BuyHaki", "Soru")
+        end
+end})
 
 local fightingstyle = t4:AddSection({"Fighting Style"})
+
+local style = t4:AddDropdown({
+    Name = "Select Fightning Style",
+    Description = "Select ability to learn",
+    Options = {"Dark step (150,000$)", "Electic (500,000$)", "Water Kung Fu (750,000$)", "Dragon Breath (1,500f)", "Superhuman (3,000,000$)", "Death Step (2,500,000$ & 5,000f)", "Sharkman Karate (2,500,000$ & 5,000f)", "Electric Claw (3,000,000$ & 5,000f)", "Dragon Talon (3,000,000$ & 5,000f)", "Godhuman (5,000,000$ & 5,000f)", "Sanguine Art (5,000,000$ & 5,000f)"},
+    Default = "nil",
+    Flag = "stylefight",
+    Callback = function(string)
+        FightingSty = string
+    end
+})
+
+t4:AddButton({"Buy Fighting style", function(Value)
+     if FightingSty == "Dark step (150,000$)" then
+        
+     end
+end})
 
 local t5 = w1:MakeTab({"Character", "user"})
 local s5 = t5:AddSection({"Character"})
@@ -1669,7 +1686,7 @@ t5:AddButton({"Apply Speed buff", function(Value)
 char:SetAttribute("SpeedMultiplier", SpeedMult)
 end})
 
-local walkonwater = t4:AddToggle({
+local walkonwater = t5:AddToggle({
   Name = "Walk on water (ice walk)",
   Description = "Like walk on water but have ice effect on it.",
   Default = false 
