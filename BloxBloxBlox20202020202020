@@ -35,6 +35,16 @@ local TweenService = game:GetService("TweenService")
 local enemiesFolder = workspace:WaitForChild("Enemies")
 local root = char:FindFirstChild("HumanoidRootPart")
 
+function NoFog()
+    local c = game:GetService("Lighting")
+    c.FogEnd = 100000
+    for r, v in pairs(c:GetDescendants()) do
+        if v:IsA("Atmosphere") then
+            v:Destroy()
+        end
+    end
+end
+
 function randomString()
 	local length = math.random(18,31)
 	local array = {}
@@ -69,7 +79,6 @@ function BringMobs(TargetCFrame, NameM)
             -- Check distance
             local distance = (hrp.Position - TargetPosition).Magnitude
             if distance > 325 then
-                -- too far, skip this mob
                 continue
             end
 
@@ -1616,7 +1625,7 @@ local s4 = t4:AddSection({"Shop"})
 local skills = t4:AddDropdown({
     Name = "Select ability",
     Description = "Select ability to learn",
-    Options = {"Air Jump (10,000$)", "Aura (25,00$)", "Flash Step (100,000$)"},
+    Options = {"Air Jump (10,000$)", "Aura (25,00$)", "Flash Step (100,000$)", "Observation (750,000$)"},
     Default = "nil",
     Flag = "ability",
     Callback = function(string)
@@ -1631,6 +1640,8 @@ t4:AddButton({"Learn ability", function(Value)
             Remotes:FindFirstChild("CommF_"):InvokeServer("BuyHaki", "Buso")
         elseif AbilityToLearn == "Flash Step (25,00$)" then
             Remotes:FindFirstChild("CommF_"):InvokeServer("BuyHaki", "Soru")
+        elseif AbilityToLearn == "Observation (750,000$)" then
+            Remotes:FindFirstChild("CommF_"):InvokeServer("KenTalk", "Buy")
         end
 end})
 
@@ -1649,8 +1660,42 @@ local style = t4:AddDropdown({
 
 t4:AddButton({"Buy Fighting style", function(Value)
      if FightingSty == "Dark step (150,000$)" then
-        
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyBlackLeg")
+    elseif FightingSty == "Electic (500,000$)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyElectro")
+    elseif FightingSty == "Water Kung Fu (750,000$)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyFishmanKarate")
+    elseif FightingSty == "Dragon Breath (1,500f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","DragonClaw","1")
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","DragonClaw","2")
+    elseif FightingSty == "Superhuman (3,000,000$)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuySuperhuman")
+    elseif FightingSty == "Death Step (2,500,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyDeathStep")
+    elseif FightingSty == "Sharkman Karate (2,500,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuySharkmanKarate",true)
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuySharkmanKarate")
+    elseif FightingSty == "Electric Claw (3,000,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyElectricClaw")
+    elseif FightingSty == "Dragon Talon (3,000,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyDragonTalon")
+    elseif FightingSty == "Godhuman (5,000,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuyGodhuman")
+    elseif FightingSty == "Sanguine Art (5,000,000$ & 5,000f)" then
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BuySanguineArt")
      end
+end})
+
+local other = t4:AddSection({"Other"})
+
+t4:AddButton({"Refund Stats", function(Value)
+       Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","Refund","1")
+       Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","Refund","2")
+end})
+
+t4:AddButton({"Reroll Race", function(Value)
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","Reroll","1")
+        Remotes:FindFirstChild("CommF_"):InvokeServer("BlackbeardReward","Reroll","2")
 end})
 
 local t5 = w1:MakeTab({"Character", "user"})
@@ -1695,17 +1740,42 @@ walkonwater:Callback(function(bool)
 char:SetAttribute("WaterWalking", bool)
 end)
 
+local t6 = w1:MakeTab({"Misc", "user"})
+local s6 = t6:AddSection({"Team"})
 
+t6:AddButton({"Join Pirate", function(Value)
+Remotes:FindFirstChild("CommF_"):InvokeServer("SetTeam","Pirates") 
+end})
 
+t6:AddButton({"Join Marines", function(Value)
+Remotes:FindFirstChild("CommF_"):InvokeServer("SetTeam","Marines")
+end})
 
+local UI = t6:AddSection({"Ui"})
 
+t6:AddButton({"Devil Fruits Shop", function(Value)
+        Remotes:FindFirstChild("CommF_"):InvokeServer("GetFruits")
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.FruitShop.Visible = true
+end})
 
+t6:AddButton({"Color Haki Menu", function(Value)
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.Colors.Visible = true
+end})
 
+t6:AddButton({"Title Menu", function(Value)
+        Remotes:FindFirstChild("CommF_"):InvokeServer("getTitles")
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.Titles.Visible = true
+end})
 
+t6:AddButton({"Awakening Menu", function(Value)
+        game:GetService("Players").LocalPlayer.PlayerGui.Main.AwakeningToggler.Visible = true
+end})
 
+local other = t6:AddSection({"Other"})
 
-
-
+t6:AddButton({"Remove Fog", function(Value)
+    NoFog()
+end})
 
 
 
