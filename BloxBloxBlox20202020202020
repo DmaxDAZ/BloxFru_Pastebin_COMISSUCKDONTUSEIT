@@ -1378,7 +1378,7 @@ AntiBan()
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/refs/heads/main/Redzhubui"))()
 local w1 = redzlib:MakeWindow({
-    Title = "Testing",
+    Title = "Testing Hub | Version 1.0.7",
     SubTitle = "[🎃TIGER🐯] Blox Fruits",
     SaveFolder = "MyConfig_LOL"
 })
