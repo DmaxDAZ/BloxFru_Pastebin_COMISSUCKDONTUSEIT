@@ -1429,7 +1429,7 @@ local Weapons = t1:AddDropdown({
        ChooseWeapon = string 
     end
 })
-    task.spawn(function()
+    spawn(function()
         while wait() do
             pcall(function()
                 if ChooseWeapon == "Melee" then
@@ -1490,42 +1490,49 @@ local farmm_c = t2:AddToggle({
   Default = false 
 })
 farmm_c:Callback(function(bool)
-        if bool then
-            chestConnection = RS.RenderStepped:Connect(function()
-                if currentChest then return end
+	if bool then
+		chestConnection = game:GetService("RunService").RenderStepped:Connect(function()
+			if currentChest then return end
 
-                pcall(function()
-                    local chestFolder = workspace:FindFirstChild("ChestModels")
-                    if not chestFolder then return end
+			pcall(function()
+				local mapFolder = workspace:FindFirstChild("Map")
+				if not mapFolder then return end
 
-                    local chests = chestFolder:GetChildren()
-                    if #chests == 0 then return end
+				for _, island in ipairs(mapFolder:GetChildren()) do
+					if not Value then break end
+					if island:IsA("Model") then
+						for _, obj in ipairs(island:GetDescendants()) do
+							if not Value then break end
+							if obj:IsA("Part") and (obj.Name:lower():find("Chest") or obj:FindFirstChildOfClass("TouchTransmitter")) then
+								currentChest = obj
 
-                    for _, chest in ipairs(chests) do
-                        if not Value then break end
-                        if chest and chest:FindFirstChild("RootPart") then
-                            currentChest = chest
+								Tween1(obj.CFrame)
 
-                           Tween1(chest.RootPart.CFrame)
+								firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, obj, 0)
+								task.wait(0.1)
+								firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, obj, 1)
 
-                            repeat
-                                task.wait(0.1)
-                            until not Value or not chest:IsDescendantOf(chestFolder)
+								repeat
+									task.wait(0.1)
+								until not Value or not obj:IsDescendantOf(island)
 
-                            currentChest = nil
-                            break
-                        end
-                    end
-                end)
-            end)
-        else
-            if chestConnection then
-                chestConnection:Disconnect()
-                chestConnection = nil
-            end
-            currentChest = nil
-        end
+								currentChest = nil
+								break
+							end
+						end
+					end
+				end
+			end)
+		end)
+	else
+		if chestConnection then
+			chestConnection:Disconnect()
+			chestConnection = nil
+		end
+		currentChest = nil
+	end
 end)
+
 
 
 local t3 = w1:MakeTab({"Travel", "map-pin"})
@@ -1548,7 +1555,7 @@ elseif Third_Sea then
 warn("Travel system in sea <3> soon.")
 end
 
-task.spawn(function()
+spawn(function()
     while wait() do
         pcall(function()
             if PlacetoTravel == "Pirate Starter" then
@@ -1788,52 +1795,78 @@ end})
 
 
 
-    spawn(function()
-        while task.wait() do
-        if _G.AutoLevel then
-        pcall(function()
-          CheckLevel()
-          if not string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, NameMon) or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
-          game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
-          
-          Tween1(CFrameQ)
-          if (CFrameQ.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 5 then
-          game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest",NameQuest,QuestLv)
-          end
-          elseif string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, NameMon) or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == true then
-          for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-          if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-          if v.Name == Ms then
-          repeat task.wait()
-          EquipTool(SelectWeapon)
-          Tween1(v.HumanoidRootPart.CFrame * CFrame.new(0,15,0))
-          v.HumanoidRootPart.Transparency = 1
-          v.Humanoid.JumpPower = 0
-          v.Humanoid.WalkSpeed = 0
-          v.HumanoidRootPart.CanCollide = false
+spawn(function()
+	while task.wait() do
+		if _G.AutoLevel then
+			pcall(function()
+				CheckLevel()
+				local Player = game.Players.LocalPlayer
+				local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+				local Humanoid = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
 
-          if _G.Bringmobs then
-            BringMobs(v.HumanoidRootPart.CFrame, v.Name)
-          end
+				if not HRP or not Humanoid then return end
 
-          FarmPos = v.HumanoidRootPart.CFrame
-          MonFarm = v.Name
-          until not _G.AutoLevel or not v.Parent or v.Humanoid.Health <= 0 or not game:GetService("Workspace").Enemies:FindFirstChild(v.Name) or game.Players.LocalPlayer.PlayerGui.Main.Quest.Visible == false
-        end   
-          end
-          end
-          for i,v in pairs(game:GetService("Workspace")["_WorldOrigin"].EnemySpawns:GetChildren()) do
-          if string.find(v.Name,NameMon) then
-          if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).Magnitude >= 10 then
-            Tween1(v.CFrame * CFrame.new(0,15,0))
-          end
-          end
-          end
-          end
-          end)
-        end
-        end
-        end)
+				local QuestUI = Player.PlayerGui.Main.Quest
+				local QuestTitle = QuestUI.Container.QuestTitle.Title.Text
+				if not string.find(QuestTitle, NameMon) or not QuestUI.Visible then
+					game.ReplicatedStorage.Remotes.CommF_:InvokeServer("AbandonQuest")
+
+					Tween1(CFrameQ)
+
+					if (CFrameQ.Position - HRP.Position).Magnitude <= 5 then
+						game.ReplicatedStorage.Remotes.CommF_:InvokeServer("StartQuest", NameQuest, QuestLv)
+					end
+
+				else
+					for _, v in pairs(workspace.Enemies:GetChildren()) do
+						if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+							if v.Name == Ms then
+								repeat
+									task.wait()
+
+									EquipTool(SelectWeapon)
+
+									local targetCFrame = v.HumanoidRootPart.CFrame * CFrame.new(0, 8.5, 0)
+									Tween1(targetCFrame)
+
+									HRP.Anchored = false
+									Humanoid.PlatformStand = false
+									HRP.Velocity = Vector3.new(0, 1, 0)
+
+									v.HumanoidRootPart.CanCollide = false
+									v.Humanoid.JumpPower = 0
+									v.Humanoid.WalkSpeed = 0
+									v.HumanoidRootPart.Transparency = 1
+
+									if _G.Bringmobs then
+										BringMobs(v.HumanoidRootPart.CFrame, v.Name)
+									end
+
+									FarmPos = v.HumanoidRootPart.CFrame
+									MonFarm = v.Name
+
+								until not _G.AutoLevel 
+									or not v.Parent 
+									or v.Humanoid.Health <= 0 
+									or not workspace.Enemies:FindFirstChild(v.Name) 
+									or not QuestUI.Visible
+							end
+						end
+					end
+
+					for _, v in pairs(workspace["_WorldOrigin"].EnemySpawns:GetChildren()) do
+						if string.find(v.Name, NameMon) then
+							if (HRP.Position - v.Position).Magnitude >= 10 then
+								Tween1(v.CFrame * CFrame.new(0, 8, 0))
+							end
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
  
 PL.CharacterAdded:Connect(function(newChar)
 	char = newChar
